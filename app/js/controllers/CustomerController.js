@@ -11,6 +11,18 @@ foodMeApp.controller('CustomerController',
     customer.name = customerName;
     customer.address = customerAddress;
 
-    $location.url('/');
+
+    newrelic.interaction().actionText("Customer");
+    newrelic.interaction().setAttribute("user", customer.name);
+
+    const r = Math.floor(Math.random()*100);
+    if ( r < 5 ) {
+      const err = new Error(`Error obtaining customer details - ${r}`);
+      newrelic.noticeError(err);
+      throw err;
+    }
+    else {
+      $location.url('/');
+    }
   };
 });

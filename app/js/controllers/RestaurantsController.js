@@ -3,6 +3,11 @@
 foodMeApp.controller('RestaurantsController',
     function RestaurantsController($scope, customer, $location, Restaurant) {
 
+  
+  newrelic.interaction().actionText("Restaurant");
+  newrelic.interaction().setAttribute("user", customer.name);
+
+
   if (!customer.address) {
     $location.url('/customer');
   }
@@ -13,8 +18,19 @@ foodMeApp.controller('RestaurantsController',
     rating: null
   };
 
+
   var allRestaurants = Restaurant.query(filterAndSortRestaurants);
-  $scope.$watch('filter', filterAndSortRestaurants, true);
+
+  const r = Math.floor(Math.random()*100);
+  if ( r < 5 ) {
+    const err = new Error(`Error getting restaurant list - ${r}`);
+    newrelic.noticeError(err);
+    throw err;
+  }
+  else {
+    $scope.$watch('filter', filterAndSortRestaurants, true);
+  }
+
 
   function filterAndSortRestaurants() {
     $scope.restaurants = [];

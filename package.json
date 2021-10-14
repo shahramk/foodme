@@ -21,8 +21,9 @@
   "dependencies": {
     "csv": ">= 0.2.1",
     "express": "^3.0.0",
+    "karma": "^6.3.4",
     "morgan": "^1.7.0",
-    "newrelic": "^1.28.1",
+    "newrelic": "^8.4.0",
     "open": ">= 0.0.2",
     "testacular": "canary"
   },

@@ -1,9 +1,11 @@
+// var newrelic = require('newrelic');
 var express = require('express');
 var fs = require('fs');
 var open = require('open');
 
 var RestaurantRecord = require('./model').Restaurant;
 var MemoryStorage = require('./storage').Memory;
+const { resolveMx } = require('dns');
 
 var API_URL = '/api/restaurant';
 var API_URL_ID = API_URL + '/:id';
@@ -37,40 +39,80 @@ exports.start = function(PORT, STATIC_DIR, DATA_FILE, TEST_DIR) {
 
 
   // API
+  // GET /api/restaurant
+  
   app.get(API_URL, function(req, res, next) {
-    res.send(200, storage.getAll().map(removeMenuItems));
+    const r = Math.floor(Math.random()*100);
+    if ( r < 5 ) { // % of fake errors
+      const message = "404 - failed to fetch restaurant list";
+      const err = new Error(message);
+      newrelic.noticeError(err);
+      return res.send(404, {error: err});
+    }
+    else {
+      return res.send(200, storage.getAll().map(removeMenuItems));
+    }
   });
 
-
+  // POST /api/restaurant
   app.post(API_URL, function(req, res, next) {
     var restaurant = new RestaurantRecord(req.body);
     var errors = [];
 
-    if (restaurant.validate(errors)) {
-      storage.add(restaurant);
-      return res.send(201, restaurant);
+    const r = Math.floor(Math.random()*100);
+    if ( r < 5 ) { // % of fake errors
+      const message = "400 - bad request - failed to update restaurants";
+      const err = new Error(message);
+      newrelic.noticeError(err);
+      return res.send(400, {error: err});
+    }
+    else {
+      if (restaurant.validate(errors)) {
+        storage.add(restaurant);
+        return res.send(201, restaurant);
+      }
+      return res.send(400, {error: errors});
     }
 
-    return res.send(400, {error: errors});
+    
   });
 
+  // POST /api/order
   app.post(API_URL_ORDER, function(req, res, next) {
-    console.log(req.body)
-    return res.send(201, { orderId: Date.now()});
+    console.log(`${new Date().getTime().toString()}`);
+    console.log(req.body);
+    const r = Math.floor(Math.random()*100);
+    if ( r < 5 ) { // % of fake errors
+      const message = "401 - failed to write order";
+      const err = new Error(message);
+      newrelic.noticeError(err);
+      res.send(401, {error: err});
+    }
+    else {
+      return res.send(201, { orderId: Date.now()});
+    }
   });
 
-
+  // GET /api/restaurant
   app.get(API_URL_ID, function(req, res, next) {
     var restaurant = storage.getById(req.params.id);
 
-    if (restaurant) {
-      return res.send(200, restaurant);
+    const r = Math.floor(Math.random()*100);
+    if ( r < 5 ) { // % of fake errors
+      const message = `400 - No restaurant with id "${req.params.id}"!`;
+      const err = new Error(message);
+      newrelic.noticeError(err);
+      res.send(400, {error: err});
     }
-
-    return res.send(400, {error: 'No restaurant with id "' + req.params.id + '"!'});
+    else {
+      if (restaurant) {
+        return res.send(200, restaurant);
+      }
+      return res.send(400, `No restaurant with id "${req.params.id}"!`);
+    }
   });
 
-
+  // PUT /api/restaurant
   app.put(API_URL_ID, function(req, res, next) {
     var restaurant = storage.getById(req.params.id);
     var errors = [];
@@ -89,8 +131,8 @@ exports.start = function(PORT, STATIC_DIR, DATA_FILE, TEST_DIR) {
     return res.send(400, {error: errors});
   });
 
-
-  app.del(API_URL_ID, function(req, res, next) {
+  // DELETE /api/restaurant
+  app.delete(API_URL_ID, function(req, res, next) {
     if (storage.deleteById(req.params.id)) {
       return res.send(204, null);
     }
@@ -112,7 +154,9 @@ exports.start = function(PORT, STATIC_DIR, DATA_FILE, TEST_DIR) {
 
     app.listen(PORT, function() {
       open('http://localhost:' + PORT + '/');
-      // console.log('Go to http://localhost:' + PORT + '/');
+      console.log('Go to http://localhost:' + PORT + '/');
+      console.log(`starting the server: ${new Date().toLocaleString()}`)
+
     });
   });
 

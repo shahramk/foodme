@@ -6,6 +6,13 @@ foodMeApp.service('cart', function Cart(localStorage, customer, $rootScope, $htt
 
   self.add = function(item, restaurant) {
     if (!self.restaurant || !self.restaurant.id) {
+      const r = Math.floor(Math.random()*100);
+      if (r < 5) {
+        const err = new Error(`add to cart failed - ${r}`);
+        newrelic.noticeError(err);
+	      throw err;
+      }
+
       self.restaurant = {
         id: restaurant.id,
         name: restaurant.name,
