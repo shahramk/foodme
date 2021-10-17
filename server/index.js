@@ -43,7 +43,7 @@ exports.start = function(PORT, STATIC_DIR, DATA_FILE, TEST_DIR) {
   
   app.get(API_URL, function(req, res, next) {
     const r = Math.floor(Math.random()*100);
-    if ( r < 5 ) { // % of fake errors
+    if ( r < 25 ) { // % of fake errors
       const message = "404 - failed to fetch restaurant list";
       const err = new Error(message);
       newrelic.noticeError(err);
