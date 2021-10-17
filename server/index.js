@@ -47,7 +47,7 @@ exports.start = function(PORT, STATIC_DIR, DATA_FILE, TEST_DIR) {
       const message = "404 - failed to fetch restaurant list";
       const err = new Error(message);
       newrelic.noticeError(err);
-      return res.send(500, {error: err});
+      return res.send(404, {error: err});
     }
     else {
       return res.send(200, storage.getAll().map(removeMenuItems));
