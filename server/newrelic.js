@@ -2,7 +2,7 @@
 
 exports.config = {
   app_name: ['FoodMe App'],
-  license_key: '___ADD_NEW_RELIC_LICENSE_KEY_HERE___',
+  license_key: '6c84b8a94a7f667a3a92c802b6e81ceda1537cd5',
   logging: {
     level: 'info'
   },

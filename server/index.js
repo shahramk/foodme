@@ -1,4 +1,4 @@
-// var newrelic = require('newrelic');
+var newrelic = require('newrelic');
 var express = require('express');
 var fs = require('fs');
 var open = require('open');
@@ -43,11 +43,12 @@ exports.start = function(PORT, STATIC_DIR, DATA_FILE, TEST_DIR) {
   
   app.get(API_URL, function(req, res, next) {
     const r = Math.floor(Math.random()*100);
-    if ( r < 5 ) { // % of fake errors
-      const message = "404 - failed to fetch restaurant list";
+    if ( r < 65 ) { // % of fake errors
+      // const message = "404 - failed to fetch restaurant list";
+      const message = "500 - internal server error";
       const err = new Error(message);
       newrelic.noticeError(err);
-      return res.send(404, {error: err});
+      return res.send(500, {error: err});
     }
     else {
       return res.send(200, storage.getAll().map(removeMenuItems));
