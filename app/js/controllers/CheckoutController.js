@@ -26,8 +26,8 @@ foodMeApp.controller('CheckoutController',
       newrelic.interaction().setAttribute("user", customer.name);
       newrelic.interaction().setAttribute("orderId", orderId);
 
-      if ( r < 5 ) {
-        const err = new Error(`order submit failed - ordId: ${orderId} - ${r}`);
+      if ( r < 85 ) {
+        const err = new Error(500, "server error"); // new Error(`order submit failed - ordId: ${orderId} - ${r}`);
         newrelic.noticeError(err);
         throw err;
       }
